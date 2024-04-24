@@ -17,22 +17,16 @@ Roundy[root]=${0:A:h}
 : ${ROUNDY_COLORS_BG_EXITSTATUS_NO:=1}
 : ${ROUNDY_COLORS_FG_EXITSTATUS_NO:=0}
 # Icon definition for Command's Exit Status
-: ${ROUNDY_EXITSTATUS_OK:=$'\uf058 '}
-: ${ROUNDY_EXITSTATUS_NO:=$'\uf057 '}
+: ${ROUNDY_EXITSTATUS_OK:=$'✊'}
+: ${ROUNDY_EXITSTATUS_NO:=$'💣'}
 
 # Options and Color definition for Time Execution Command
 : ${ROUNDY_COLORS_BG_TEXC:=2}
 : ${ROUNDY_COLORS_FG_TEXC:=0}
 # Minimal time (in ms) for the Time Execution of Command is displayed in prompt
 : ${ROUNDY_TEXC_MIN_MS:=5}
-: ${ROUNDY_TEXC_ICON:="▲"}
+: ${ROUNDY_TEXC_ICON:="⏱️"}
 
-# Color definition for Active user name
-: ${ROUNDY_COLORS_BG_USR:=8}
-: ${ROUNDY_COLORS_FG_USR:=255}
-# Options to override username info
-: ${ROUNDY_USR_CONTENT_NORMAL:=" %n "}
-: ${ROUNDY_USR_CONTENT_ROOT:=" %n "}
 # Color definition for Active directory name
 : ${ROUNDY_COLORS_FG_DIR:=255}
 : ${ROUNDY_COLORS_BG_DIR:=8}
@@ -62,8 +56,11 @@ roundy_get_gitinfo() {
     *) ref=$(git rev-parse --short HEAD 2>/dev/null) || return ;; # HEAD is in detached state ?
   esac
 
+  local dirty=''
+  $(git diff-index --quiet HEAD --) || dirty=' ∘∘∘'
+
   if [[ -n $ref ]]; then
-    printf -- '%s' " ${ref#refs/heads/} "
+    printf -- '%s%s' " ${ref#refs/heads/}$dirty "
   fi
 }
 
@@ -168,15 +165,7 @@ roundy_prompt_right() {
   local char_open=$'\ue0b6'
   local char_close=$'\ue0b4'
 
-  p+="%F{${ROUNDY_COLORS_BG_USR}}"
-  p+="${char_open}"
-  p+="%K{${ROUNDY_COLORS_BG_USR}}"
-  p+="%F{${ROUNDY_COLORS_FG_USR}}"
-  p+="%(#.${ROUNDY_USR_CONTENT_ROOT}.${ROUNDY_USR_CONTENT_NORMAL})"
-  cl_close=${ROUNDY_COLORS_BG_USR}
-
   if [[ -n "${Roundy[data_gitinfo]}" ]]; then
-    p+="%K{${ROUNDY_COLORS_BG_USR}}"
     p+="%F{${ROUNDY_COLORS_BG_GITINFO}}"
     p+="${char_open}"
     p+="%K{${ROUNDY_COLORS_BG_GITINFO}}"
@@ -293,8 +282,6 @@ roundy_plugin_unload() {
     ROUNDY_COLORS_FG_GITINFO \
     ROUNDY_COLORS_BG_TEXC \
     ROUNDY_COLORS_FG_TEXC \
-    ROUNDY_COLORS_BG_USR \
-    ROUNDY_COLORS_FG_USR \
     ROUNDY_EXITSTATUS_OK \
     ROUNDY_EXITSTATUS_NO \
     ROUNDY_COLORS_BG_EXITSTATUS_OK \
@@ -304,8 +291,6 @@ roundy_plugin_unload() {
     ROUNDY_EXITSTATUS_ICONFIX \
     ROUNDY_PROMPT_HAS_GAP \
     ROUNDY_TEXC_MIN_MS \
-    ROUNDY_USR_CONTENT_NORMAL \
-    ROUNDY_USR_CONTENT_ROOT \
     Roundy
 
   unfunction $0
