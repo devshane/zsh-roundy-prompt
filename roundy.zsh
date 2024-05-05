@@ -161,23 +161,24 @@ roundy_prompt_left() {
 }
 
 roundy_prompt_right() {
+  if [[ -z "${Roundy[data_gitinfo]}" ]]; then
+      return
+  fi
+
   local p cl_close
   local char_open=$'\ue0b6'
   local char_close=$'\ue0b4'
 
-  if [[ -n "${Roundy[data_gitinfo]}" ]]; then
-    p+="%F{${ROUNDY_COLORS_BG_GITINFO}}"
-    p+="${char_open}"
-    p+="%K{${ROUNDY_COLORS_BG_GITINFO}}"
-    p+="%F{${ROUNDY_COLORS_FG_GITINFO}}"
-    p+="${Roundy[data_gitinfo]}"
-    cl_close=${ROUNDY_COLORS_BG_GITINFO}
-  fi
+  p+="%F{${ROUNDY_COLORS_BG_GITINFO}}"
+  p+="${char_open}"
+  p+="%K{${ROUNDY_COLORS_BG_GITINFO}}"
+  p+="%F{${ROUNDY_COLORS_FG_GITINFO}}"
+  p+="${Roundy[data_gitinfo]}"
+  cl_close=${ROUNDY_COLORS_BG_GITINFO}
   p+="%k"
   p+="%F{${cl_close}}"
   p+="${char_close}"
   p+="%f"
-
   Roundy[rprompt]=$p
   typeset -g RPROMPT=${Roundy[rprompt]}
 }
