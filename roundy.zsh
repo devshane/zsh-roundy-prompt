@@ -56,10 +56,10 @@ roundy_get_gitinfo() {
     *) ref=$(git rev-parse --short HEAD 2>/dev/null) || return ;; # HEAD is in detached state ?
   esac
 
-  local dirty=''
-  $(git diff-index --quiet HEAD --) || dirty=' ∘∘∘'
-
   if [[ -n $ref ]]; then
+    local dirty=''
+    $(git diff-index --quiet HEAD --) || dirty=' ∘∘∘'
+
     printf -- '%s%s' " ${ref#refs/heads/}$dirty "
   fi
 }
@@ -162,7 +162,9 @@ roundy_prompt_left() {
 
 roundy_prompt_right() {
   if [[ -z "${Roundy[data_gitinfo]}" ]]; then
-      return
+    Roundy[rprompt]=''
+    typeset -g RPROMPT=${Roundy[rprompt]}
+    return
   fi
 
   local p cl_close
